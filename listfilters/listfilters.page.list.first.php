@@ -21,76 +21,97 @@ Hooks=page.list.first
 
 defined('COT_CODE') or die('Wrong URL');
 
-$operators = array(
-	'eq' => "(%s = %s)",
-	'ne' => "(%s != %s)",
-	'lt' => '(%s < %f)',
-	'lte' => '(%s <= %f)',
-	'gt' => '(%s > %f)',
-	'gte' => '(%s >= %f)',
-	'in' => '(%s IN (%s))',
-	'rng' => '(%s BETWEEN %s AND %s)'
-);
-
-$filters = cot_import('filters', 'G', 'ARR');
-$filterway = strtoupper(cot_import('way', 'G', 'ALP'));
-if (!in_array($filterway, array('AND', 'OR', 'XOR'))) $filterway = 'AND';
-
-if ($filters && is_array($filters))
+if (cot_auth('plug', 'listfilters', 'R'))
 {
-	$sqlfilters = array();
-	$sqlparams = array();
+	$operators = array(
+		'eq' => "(%s = %s)",
+		'ne' => "(%s != %s)",
+		'lt' => '(%s < %s)',
+		'lte' => '(%s <= %s)',
+		'gt' => '(%s > %s)',
+		'gte' => '(%s >= %s)',
+		'in' => '(%s IN (%s))',
+		'rng' => '(%s BETWEEN %s AND %s)'
+	);
+
+	$filters = (array)cot_import('filters', 'G', 'ARR');
+	$filterway = strtoupper(cot_import('way', 'G', 'ALP'));
+	if (!in_array($filterway, array('AND', 'OR', 'XOR'))) $filterway = 'AND';
+
 	if ($o && $p)
 	{
 		if (!is_array($o)) $o = array($o);
 		if (!is_array($p)) $p = array($p);
 		$filters['eq'] = array_combine($o, $p);
+		unset($o);
+		unset($p);
 	}
-	foreach ($filters as $type => $filter)
+	
+	if ($filters)
 	{
-		$type = strtolower($type);
-		foreach ($filter as $field => $value)
+		$sqlfilters = array();
+		$sqlparams = array();
+		$fieldexists = array();
+		foreach ($filters as $type => $filter)
 		{
-			switch ($type)
+			$type = strtolower($type);
+			if (!is_array($filter)) continue;
+			foreach ($filter as $field => $value)
 			{
-				case 'lt':
-				case 'lte':
-				case 'gt':
-				case 'gte':
-					$value = cot_import($value, 'D', 'NUM');
-					if ($value === null)
-						continue 2;
-					break;
-				case 'in':
-					$value = explode(',', cot_import($value, 'D', 'TXT'));
-					break;
-				case 'rng':
-					$value = explode('~', cot_import($value, 'D', 'TXT'));
-					if (count($value) != 2)
-						continue 2;
-					break;
-				default:
-					$value = cot_import($value, 'D', 'TXT');
-					break;
+				switch ($type)
+				{
+					case 'lt':
+					case 'lte':
+					case 'gt':
+					case 'gte':
+						$value = cot_import($value, 'D', 'NUM');
+						if ($value === null)
+						{
+							unset($filters[$type][$field]);
+							continue 2;
+						}
+						break;
+					case 'in':
+						$value = explode(',', cot_import($value, 'D', 'TXT'));
+						break;
+					case 'rng':
+						$value = explode('~', cot_import($value, 'D', 'TXT'));
+						if (count($value) != 2)
+						{
+							unset($filters[$type][$field]);
+							continue 2;
+						}
+						break;
+					default:
+						$value = cot_import($value, 'D', 'TXT');
+						break;
+				}
+				$field = 'page_' . cot_import($field, 'D', 'ALP');
+				if ($fieldexists[$field] === null)
+				{
+					$fieldexists[$field] = $db->fieldExists($db_pages, $field);
+				}
+				if (!$fieldexists[$field])
+				{
+					unset($filters[$type][$field]);
+					continue;
+				}
+				if (!is_array($value)) $value = array($value);
+				foreach ($value as &$val)
+				{
+					$encval = md5($val);
+					$sqlparams[$encval] = $val;
+					$val = ":$encval";
+				}
+				$sqlfilters[] = ($type == 'rng') ? 
+					sprintf($operators[$type], $field, $value[0], $value[1]) : 
+					sprintf($operators[$type], $field, implode(',', $value));
 			}
-			$field = 'page_' . cot_import($field, 'D', 'ALP');
-			if (!$db->fieldExists($db_pages, $field))
-				continue;
-			if (!is_array($value)) $value = array($value);
-			foreach ($value as &$val)
-			{
-				$encval = md5($val);
-				$sqlparams[$encval] = $val;
-				$val = ":$encval";
-			}
-			$sqlfilters[] = ($type == 'rng') ? 
-				sprintf($operators[$type], $field, $value[0], $value[1]) : 
-				sprintf($operators[$type], $field, implode(',', $value));
 		}
-	}
-	if ($sqlfilters)
-	{
-		$sqlfilters = '(' . implode(" $filterway ", $sqlfilters) . ')';
+		if ($sqlfilters)
+		{
+			$sqlfilters = '(' . implode(" $filterway ", $sqlfilters) . ')';
+		}
 	}
 }
 
