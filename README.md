@@ -1,19 +1,16 @@
-List Filters 
-============
+# List Filters 
 
 List Filters adds advanced filtering options for page lists to Cotonti. A list 
 of available filter types is below.
 
-Installation
-------------
+## Installation
 
 Simply install the plugin through the admin panel as you would with any other 
 plugin. No configuration is required, just add the filters to your page.list.tpl 
 file. Implementation details are below. You may modify the plugin rights to 
 disable it for certain groups, by default all guests and members can use it.
 
-Filter types
-------------
+## Filter types
 
 * eq	Equals (page_$field = $value) Value can be any string or number.
 * ne	Not Equal (page_$field != $value) Value can be any string or number.
@@ -24,8 +21,7 @@ Filter types
 * in	SQL IN operator (page_$field IN ($value1, $value2, $value3)) Values must be comma seperated.
 * rng	SQL BETWEEN operator (page_$field BETWEEN $value1 AND $value2) Values must be seperated with a tilde (1~2). Strings are supported.
 
-Implementation
---------------
+## Implementation
 
 Implementation of List Filters is a matter of modifying your page.list.tpl to 
 include the filters. There are two ways in which you can display the filters: as
@@ -34,8 +30,7 @@ complex filtering systems are easier implemented using forms, while plain links
 are more user friendly and quicker because there's no need to submit a form. The
 plugin provides helper functions for both implementation methods.
 
-Using links
-~~~~~~~~~~~
+### Using links
 
 For links the plugin provides the helper function listfilter_url(). This 
 function takes three arguments and will return a URL to the list with the 
@@ -68,8 +63,7 @@ As you see this filter has three options: All, Modules and Plugins. In this case
 link, because clicking an active filter will disable it too (like a toggle 
 switch).
 
-Using a form
-~~~~~~~~~~~~
+### Using a form
 
 An alternative to using plain text links is to use a form. This can be more
 convenient in complex situations. To simplify creating the form, the plugin 
@@ -83,6 +77,8 @@ are:
 * listfilter_form_radiobox($type, $field, $options, $default = '', $titles = NULL)
 * listfilter_form_selectbox($type, $field, $options, $default = '', $titles = NULL)
 
+Here's the arguments explained:
+
 * $type (string) One of the filter types listed above.
 * $field (string) Field name without 'page_' prefix.
 * $value (string) Value which the filter will check for.
@@ -91,8 +87,7 @@ are:
 * $options (string) Comma-seperated list of options.
 * $titles (string) Comma-seperated list of titles (optional, defaults to $values).
 
-Other helpers
-~~~~~~~~~~~~~
+### Other helpers
 
 listfilter_urlparam()
 
