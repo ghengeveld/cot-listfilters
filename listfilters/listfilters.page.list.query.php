@@ -74,6 +74,22 @@ function listfilter_urlparam()
 }
 
 /**
+ * Returns the current URL without filters.
+ * 
+ * @return string
+ */
+function listfilter_plainurl()
+{
+	global $list_url_path;
+	$params = $list_url_path;
+	if($params['filters'])
+	{
+		unset($params['filters']);
+	}
+	return cot_url('page', $params);
+}
+
+/**
  * Wrapper for cot_checkbox()
  *
  * @param string $type Filter type

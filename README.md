@@ -65,8 +65,10 @@ switch).
 
 ### Using a form
 
-An alternative to using plain text links is to use a form. This can be more
-convenient in complex situations. To simplify creating the form, the plugin 
+An alternative to using plain text links is to use a form. This can be more 
+convenient in complex situations, however it does have a major drawback. If you 
+use a form you will lose the ability to rewrite the filters part of the URL, 
+instead the filters will be appended. To simplify creating the form, the plugin 
 provides several helper functions for generating form elements. These functions 
 are effectively wrappers for the functions included in the Cotonti Forms API 
 (system/forms.php). They return complete HTML form fields. Provided functions 
@@ -87,6 +89,10 @@ Here's the arguments explained:
 * $options (string) Comma-seperated list of options.
 * $titles (string) Comma-seperated list of titles (optional, defaults to $values).
 
+Your form should point to the current list URL and use GET as method:
+
+    <form action="{PHP|listfilters_plainurl()}" method="GET">
+
 ### Other helpers
 
 listfilter_urlparam()
@@ -94,3 +100,7 @@ listfilter_urlparam()
 Returns the URL query parameter for all currently active filters. Example:
 
     filters[eq][a]=b&filters[eq][c]=d&filters[ne][e]=f
+
+listfilter_plainurl()
+
+Returns the current URL without filters.
