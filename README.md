@@ -19,7 +19,7 @@ disable it for certain groups, by default all guests and members can use it.
 * gt	Greater Than (page_$field > $value) Value must be numeric.
 * gte	Greater Than or Equal (page_$field >= $value) Value must be numeric.
 * in	SQL IN operator (page_$field IN ($value1, $value2, $value3)) Values must be comma seperated.
-* rng	SQL BETWEEN operator (page_$field BETWEEN $value1 AND $value2) Values must be seperated with a tilde (1~2). Strings are supported.
+* rng	SQL BETWEEN operator (page_$field BETWEEN $value1 AND $value2) Values must be seperated with two periods (1..2). Strings are supported.
 
 ## Implementation
 
@@ -76,7 +76,9 @@ are:
 
 * listfilter_form_checkbox($type, $field, $value, $default = 0, $title = NULL)
 * listfilter_form_inputbox($type, $field, $default = '')
+* listfilter_form_numberbox($type, $field, $min, $max, $step = 1, $default = NULL)
 * listfilter_form_radiobox($type, $field, $options, $default = '', $titles = NULL)
+* listfilter_form_rangebox($type, $field, $min, $max, $step = 1, $default = NULL)
 * listfilter_form_selectbox($type, $field, $options, $default = '', $titles = NULL)
 
 Here's the arguments explained:
@@ -86,8 +88,11 @@ Here's the arguments explained:
 * $value (string) Value which the filter will check for.
 * $title (string) Text that will be displayed as a label (optional, defaults to $value).
 * $default (string) Default text to display in the input field (optional) or value that is selected by default or in case of a checkbox: 0 (not checked) or 1 (checked).
-* $options (string) Comma-seperated list of options.
-* $titles (string) Comma-seperated list of titles (optional, defaults to $values).
+* $min (float) Minimum allowed value
+* $max (float) Maximum allowed value
+* $step (float) Allowed number interval (optional, defaults to 1)
+* $options (string) Comma-separated list of options.
+* $titles (string) Comma-separated list of titles (optional, defaults to $values).
 
 Your form should point to the current list URL and use GET as method:
 

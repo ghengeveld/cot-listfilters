@@ -106,7 +106,8 @@ function listfilter_form_checkbox($type, $field, $value, $default = 0, $title = 
 	if ($title === NULL) $title = $value;
 	$chosen = (isset($list_url_path['filters'][$type][$field])) ?
 		($list_url_path['filters'][$type][$field] == $value) : (bool)$default;
-	return cot_checkbox($chosen, "filters[$type][$field]", $title, 'id="filter_'.$type.'_'.$field.'"', $value);
+	return cot_checkbox($chosen, "filters[$type][$field]", $title, 
+		'id="filter_'.$type.'_'.$field.'"', $value);
 }
 
 /**
@@ -123,7 +124,29 @@ function listfilter_form_inputbox($type, $field, $default = '')
 	if (!function_exists('cot_inputbox')) include cot_incfile('forms');
 	$value = $list_url_path['filters'][$type][$field];
 	if (!$value) $value = $default;
-	return cot_inputbox('text', "filters[$type][$field]", $value, 'id="filter_'.$type.'_'.$field.'"');
+	return cot_inputbox('text', "filters[$type][$field]", $value, 
+		'id="filter_'.$type.'_'.$field.'"');
+}
+
+/**
+ * Wrapper for cot_inputbox() with HTML5 input type 'number'
+ *
+ * @param string $type Filter type
+ * @param string $field Field name
+ * @param float $min Minimum allowed value
+ * @param float $max Maximum allowed value
+ * @param float $step Allowed number interval (optional, defaults to 1)
+ * @param float $default Default value (optional, defaults to $min)
+ * @return string
+ */
+function listfilter_form_numberbox($type, $field, $min, $max, $step = 1, $default = NULL)
+{
+	global $list_url_path;
+	if (!function_exists('cot_inputbox')) include cot_incfile('forms');
+	$value = $list_url_path['filters'][$type][$field];
+	if (!$value) $value = ($default !== NULL) ? $default : $min;
+	return cot_inputbox('number', "filters[$type][$field]", (float)$value, 
+		'min="'.(float)$min.'" max="'.(float)$max.'" step="'.(float)$step.'" id="filter_'.$type.'_'.$field.'"');
 }
 
 /**
@@ -131,9 +154,9 @@ function listfilter_form_inputbox($type, $field, $default = '')
  *
  * @param string $type Filter type
  * @param string $field Field name
- * @param string $options Comma-seperated list of options
+ * @param string $options Comma-separated list of options
  * @param string $default Option selected by default
- * @param string $titles Comma-seperated list of alternative label titles (defaults to $options)
+ * @param string $titles Comma-separated list of alternative label titles (defaults to $options)
  * @return string
  */
 function listfilter_form_radiobox($type, $field, $options, $default = '', $titles = NULL)
@@ -146,7 +169,31 @@ function listfilter_form_radiobox($type, $field, $options, $default = '', $title
 	$chosen = $list_url_path['filters'][$type][$field];
 	if (!$chosen) $chosen = $default;
 	if ($type == 'in') $chosen = explode(',', $chosen);
-	return cot_radiobox($chosen, "filters[$type][$field]", $options, $titles, true, 'id="filter_'.$type.'_'.$field.'"');
+	return cot_radiobox($chosen, "filters[$type][$field]", $options, $titles, true, 
+		'id="filter_'.$type.'_'.$field.'"');
+}
+
+/**
+ * Wrapper for cot_inputbox() with HTML5 input type 'range'
+ * Note that this doesn't support filter type 'rng', for that you will need to 
+ * use JavaScript (jQuery UI for example).
+ *
+ * @param string $type Filter type
+ * @param string $field Field name
+ * @param float $min Minimum allowed value
+ * @param float $max Maximum allowed value
+ * @param float $step Allowed number interval (optional, defaults to 1)
+ * @param float $default Default value (optional, defaults to $min)
+ * @return string
+ */
+function listfilter_form_rangebox($type, $field, $min, $max, $step = 1, $default = NULL)
+{
+	global $list_url_path;
+	if (!function_exists('cot_inputbox')) include cot_incfile('forms');
+	$value = $list_url_path['filters'][$type][$field];
+	if (!$value) $value = ($default !== NULL) ? $default : $min;
+	return cot_inputbox('range', "filters[$type][$field]", (float)$value, 
+		'min="'.(float)$min.'" max="'.(float)$max.'" step="'.(float)$step.'" id="filter_'.$type.'_'.$field.'"');
 }
 
 /**
@@ -154,9 +201,9 @@ function listfilter_form_radiobox($type, $field, $options, $default = '', $title
  *
  * @param string $type Filter type
  * @param string $field Field name
- * @param string $options Comma-seperated list of options
+ * @param string $options Comma-separated list of options
  * @param string $default Option selected by default
- * @param string $titles Comma-seperated list of alternative label titles (defaults to $options)
+ * @param string $titles Comma-separated list of alternative label titles (defaults to $options)
  * @return string
  */
 function listfilter_form_selectbox($type, $field, $options, $default = '', $titles = NULL)
@@ -169,7 +216,8 @@ function listfilter_form_selectbox($type, $field, $options, $default = '', $titl
 	$chosen = $list_url_path['filters'][$type][$field];
 	if (!$chosen) $chosen = $default;
 	if ($type == 'in') $chosen = explode(',', $chosen);
-	return cot_selectbox($chosen, "filters[$type][$field]", $options, $titles, true, 'id="filter_'.$type.'_'.$field.'"');
+	return cot_selectbox($chosen, "filters[$type][$field]", $options, $titles, true, 
+		'id="filter_'.$type.'_'.$field.'"');
 }
 
 ?>

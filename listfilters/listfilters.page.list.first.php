@@ -16,7 +16,7 @@ Hooks=page.list.first
  *  gt - Greater Than (page_$field > $value)
  *  gte - Greater Than or Equal (page_$field >= $value)
  *  in - SQL IN operator (page_$field IN ($value1, $value2, $value3)) Values must be comma seperated
- *  rng - SQL BETWEEN operator (page_$field BETWEEN $value1 AND $value2) Values must be seperated with a tilde (1~2)
+ *  rng - SQL BETWEEN operator (page_$field BETWEEN $value1 AND $value2) Values must be seperated with two periods (1..2)
  */
 
 defined('COT_CODE') or die('Wrong URL');
@@ -75,7 +75,7 @@ if (cot_auth('plug', 'listfilters', 'R'))
 						$value = explode(',', cot_import($value, 'D', 'TXT'));
 						break;
 					case 'rng':
-						$value = explode('~', cot_import($value, 'D', 'TXT'));
+						$value = explode('..', cot_import($value, 'D', 'TXT'));
 						if (count($value) != 2)
 						{
 							unset($filters[$type][$field]);
