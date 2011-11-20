@@ -7,9 +7,9 @@ Hooks=page.list.query
 
 defined('COT_CODE') or die('Wrong URL');
 
-if ($sqlfilters)
+if ($sqlfilters && $filterway)
 {
-	$where['filter'] = $sqlfilters;
+	$where['filter'] = '(' . implode(" $filterway ", $sqlfilters) . ')';
 	if (is_array($sqlparams))
 	{
 		$params = array_merge($params, $sqlparams);
@@ -35,6 +35,41 @@ function listfilter_active($type, $field, $value = NULL)
 {
 	global $list_url_path;
 	return ($list_url_path['filters'][$type][$field] == $value);
+}
+
+/**
+ * Returns the number of items that would be shown if the filter were applied.
+ * 
+ * @param string $type Filter type
+ * @param string $field Field name
+ * @param string $value Value that was filtered on (optional)
+ * @return bool
+ */
+function listfilter_count($type, $field, $value = NULL)
+{
+	global $c, $db, $db_pages, $filters, $filterway;
+	$params = array();
+	$categories = implode("','", cot_structure_children('page', $c));
+	$where = "WHERE page_cat IN ('$categories')";
+	$GLOBALS['cfg']['display_errors'] = true;
+	if ($value === null)
+	{
+		if ($filters[$type][$field])
+		{
+			unset($filters[$type][$field]);
+		}
+	}
+	else
+	{
+		$filters[$type][$field] = $value;
+	}
+	list($sqlfilters, $sqlparams) = listfilter_build($filters);
+	if ($sqlfilters && $filterway)
+	{
+		$where .= ' AND (' . implode(" $filterway ", $sqlfilters) . ')';
+		$params = array_merge($params, $sqlparams);
+	}
+	return (int)$db->query("SELECT COUNT(*) FROM $db_pages $where", $params)->fetchColumn();
 }
 
 /**
