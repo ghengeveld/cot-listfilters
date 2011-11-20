@@ -100,6 +100,10 @@ Your form should point to the current list URL and use GET as method:
 
 ### Other helpers
 
+listfilter_count($type, $field, $value = null)
+
+Returns the number of pages that would be shown if the filter were active. Expects the same arguments as listfilter_active() and listfilter_url().
+
 listfilter_urlparam()
 
 Returns the URL query parameter for all currently active filters. Example:
