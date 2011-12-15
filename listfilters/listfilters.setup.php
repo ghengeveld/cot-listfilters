@@ -4,8 +4,8 @@
 Code=listfilters
 Name=List Filters
 Description=Advanced filtering options for page lists
-Version=1.1
-Date=2011-nov-13
+Version=1.2
+Date=2011-dec-10
 Author=Gert Hengeveld
 Copyright=Cotonti Team
 Notes=BSD License
